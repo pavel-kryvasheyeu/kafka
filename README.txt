@@ -20,13 +20,13 @@ docker run -d --name=kafka-kraft -h kafka-kraft -p 9101:9101 -e KAFKA_NODE_ID=1 
 
 bash
 --------------
-check listening on port 9092 for windows
+check listening on port 9092 for windows:
 netstat -ano | findstr 9092
 
 docker
 ---------------
 docker exec -it kafka /bin/bash
-cd /opt/kafka/bin
+cd /opt/kafka/bin // this is kafka-cli directory
 
 kafka-cli
 ---------------
