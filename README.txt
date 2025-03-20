@@ -7,8 +7,6 @@ docker run -d -p 9092:9092 --name broker -e KAFKA_NODE_ID=1 -e KAFKA_PROCESS_ROL
 
 docker build -t python-kafka-app .
 docker run --rm -it --name python-app python-kafka-app
-
-
 ________________________________________________________________________________________
 
 https://docs.confluent.io/platform/current/installation/docker/config-reference.html
@@ -19,12 +17,13 @@ netstat -ano | findstr 9092
 
 docker
 ---------------
-docker exec -it kafka /bin/bash
-
+docker exec -it kafka /bin/bash && cd /opt/kafka/bin
 
 kafka-cli
 ---------------
+cd /opt/kafka/bin
 
-kafka-console-producer.bat --bootstrap-server localhost:9092 --topic k6-metrics
-kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic k6-metrics --from-beginning
-kafka-console-consumer.bat --bootstrap-server localhost:9092 --topic k6-metrics --from-beginning --group k6-consumer-group
+./kafka-console-producer.sh --bootstrap-server localhost:9092 --topic k6-metrics
+
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic k6-metrics --from-beginning
+./kafka-console-consumer.sh --bootstrap-server localhost:9092 --topic k6-metrics --from-beginning --group k6-consumer-group

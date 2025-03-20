@@ -1,34 +1,47 @@
 from kafka import KafkaConsumer
-import time
 import logging
+import time
+
+from kafka.errors import NoBrokersAvailable
+
+KAFKA_TOPICS = 'k6-metrics'
+KAFKA_BOOTSTRAP_SERVERS = ['kafka:9092'] # Kafka connect host
+AUTO_OFFSET_RESET = 'earliest' # Start reading from the beginning if there is no offset
+IS_AUTOCOMMIT_ENABLED = False
+KAFKA_CONSUMER_GROUP_ID = 'k6-consumer-group'
+
+logging.basicConfig(level=logging.INFO)
+log = logging.getLogger(__name__)
+
+def wait_for_kafka():
+    while True:
+        try:
+            consumer = KafkaConsumer(
+                KAFKA_TOPICS,
+                bootstrap_servers = KAFKA_BOOTSTRAP_SERVERS,
+                auto_offset_reset = AUTO_OFFSET_RESET,
+                enable_auto_commit = IS_AUTOCOMMIT_ENABLED,
+                group_id = KAFKA_CONSUMER_GROUP_ID
+            )
+            return consumer
+        except NoBrokersAvailable:
+            log.warning("Kafka broker not available, retrying in 5 seconds...")
+            time.sleep(5)
 
 def main():
-    logging.basicConfig(level=logging.INFO)
-    logger = logging.getLogger(__name__)
-    # logger.info("Starting 'python-app'...")
-    # while True:
-    #     logger.info("This message is printed every 5 seconds.")
-    #     time.sleep(5)
-
-    logger.info("Starting 'python-app'...")
-    consumer = KafkaConsumer(
-        'k6-metrics',                                     # Topic Name
-        bootstrap_servers=['kafka:9092'],                # Connect to Kafka on the host
-        auto_offset_reset='earliest',                    # Start reading from the beginning if there is no offset
-        enable_auto_commit=False,                        # Disable autocommit
-        group_id='k6-consumer-group'                     # Consumer group ID
-    )
+    log.info("Starting 'python-app'...")
+    consumer = wait_for_kafka()
     try:
-        logger.info("Listening to Kafka topic 'k6-metrics'...")
+        log.info("Listening to Kafka topic 'k6-metrics'...")
         for message in consumer:
-            logger.info("Message processing...")
+            log.info("Message processing...")
 
-            logger.info(f"Received message: {message.value.decode('utf-8')}")
+            log.info(f"Received message: {message.value.decode('utf-8')}")
 
-            logger.info("offset commit")
+            log.info("offset commit")
             consumer.commit()
     except KeyboardInterrupt:
-        logger.error("Shutting down...")
+        log.error("Shutting down...")
     finally:
         consumer.close()
 

@@ -24,10 +24,10 @@ services:
     networks:
       - my_network
 
-  python-app:
+  py-app:
     build:
       context: ./app
-    container_name: python-app
+    container_name: py-app
     depends_on:
       - kafka
     volumes:
