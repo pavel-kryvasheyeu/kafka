@@ -5,9 +5,9 @@ import time
 from kafka.errors import NoBrokersAvailable
 
 KAFKA_TOPICS = 'k6-metrics'
-KAFKA_BOOTSTRAP_SERVERS = ['localhost:9092'] # Kafka connect host
-AUTO_OFFSET_RESET = 'earliest' # Start reading from the beginning if there is no offset
-IS_AUTOCOMMIT_ENABLED = False
+KAFKA_BOOTSTRAP_SERVERS = ['localhost:9092']
+AUTO_OFFSET_RESET = 'earliest' # 'latest' for "at most once"
+IS_AUTOCOMMIT_ENABLED = False # True for "at most once"
 KAFKA_CONSUMER_GROUP_ID = 'k6-consumer-group'
 
 logging.basicConfig(level=logging.INFO)
@@ -15,6 +15,7 @@ log = logging.getLogger(__name__)
 
 def wait_for_kafka():
     while True:
+        time.sleep(5)
         try:
             consumer = KafkaConsumer(
                 KAFKA_TOPICS,
@@ -25,11 +26,10 @@ def wait_for_kafka():
             )
             return consumer
         except NoBrokersAvailable:
-            log.warning("Kafka broker not available, retrying in 5 seconds...")
-            time.sleep(5)
+            log.warning("Kafka not available, retrying in 5 seconds...")
 
 def main():
-    log.info("Starting 'python-app'...")
+    log.info("Starting 'py-app'...")
     consumer = wait_for_kafka()
     try:
         log.info("Listening to Kafka topic 'k6-metrics'...")
@@ -39,9 +39,9 @@ def main():
             log.info(f"Received message: {message.value.decode('utf-8')}")
 
             log.info("offset commit")
-            consumer.commit()
+            consumer.commit() # not needed for "at most once"
     except KeyboardInterrupt:
-        log.error("Shutting down...")
+        log.warning("Shutting down...")
     finally:
         consumer.close()
 
