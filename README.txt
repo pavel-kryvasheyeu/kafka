@@ -1,3 +1,9 @@
+python
+-------------------
+cd ./app
+pip install -r requirements.txt
+
+
 Kafka docker images
 -------------------
 * Off image (currently in use) https://kafka.apache.org/downloads:
