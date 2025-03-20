@@ -17,7 +17,7 @@ netstat -ano | findstr 9092
 
 docker
 ---------------
-docker exec -it kafka /bin/bash && cd /opt/kafka/bin
+docker exec -it kafka /bin/bash
 
 kafka-cli
 ---------------

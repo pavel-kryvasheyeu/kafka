@@ -5,7 +5,7 @@ import time
 from kafka.errors import NoBrokersAvailable
 
 KAFKA_TOPICS = 'k6-metrics'
-KAFKA_BOOTSTRAP_SERVERS = ['kafka:9092'] # Kafka connect host
+KAFKA_BOOTSTRAP_SERVERS = ['localhost:9092'] # Kafka connect host
 AUTO_OFFSET_RESET = 'earliest' # Start reading from the beginning if there is no offset
 IS_AUTOCOMMIT_ENABLED = False
 KAFKA_CONSUMER_GROUP_ID = 'k6-consumer-group'
